@@ -1,0 +1,266 @@
+---
+title: "Codebook: Development Indicators Dataset"
+author: "Colby Pastel"
+date: "2024-02-28"
+output: pdf_document
+---
+
+```{r    setup, include = FALSE}
+  knitr::opts_chunk$set(
+  echo = FALSE,
+  eval = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+**Overview**: 
+
+The data presented in this codebook describe important international development indicators of individual countries over time. In total, there are 17 variables and 13,671 observations. The period of record begins in 1960 and ends in 2022. Please note, not all variables are available for all years. Most variables contain numeric data, with a couple containing character data. There are also two factor variables presented: Continent and GINI. This dataset was designed with linear regression analysis in mind to yield insights into the development of countries around the world. 
+\newline
+
+**Sources and Methodology**:
+
+All variables come from the World Bank's World Development Indicators (WDI) database except for ID, Continent, GDPC (which were generated), and HAQ, which comes from the Institute for Health Metrics and Evaluation (accessed through Our World in Data). Data was saved from the World Bank's DataBank in a .csv file and imported into RStudio. Data was tidied from its original form by lengthen and widening pivots, variables were added, and variable names were renamed to be more user friendly. Data for the HAQ indicator was saved from Our World in Data as a .csv file and imported into RStudio. HAQ data was then merged with the modified World Bank dataset. Notably, the World Bank WDI database does not include an indicator for access to healthcare, so the Healthcare Access and Quality Index (HAQ) from the Institute for Health Metrics and Evaluation was used instead. Finally, the Continent and GINI variables were converted to factor variables for simplicity.
+\newline
+
+**Itemized Variables**:
+\newline
+
+**Unique Identifier**
+
+Variable name: ID
+
+Variable type: integer
+
+Description: Unique identifier given to each observation. Author Generated.
+\newline
+
+**Country Name**
+
+Variable name: Country
+
+Variable type: character
+
+Description: Name of countries in dataset.
+\newline
+
+**Country Code**
+
+Variable name: Country_Code
+
+Variable type: character
+
+Description: Three letter country code given to each country.
+\newline
+
+**Continent**
+
+Variable name: Continent
+
+Variable type: factor
+
+Description: Continent which country belongs to. Author generated.
+
+```{r}
+library(tidyverse)
+df8 = read_csv('Codebook_Dataset.csv')
+cbfactor = function(.data, x){
+  x = enquo(x)
+  
+  count(.data, !!x) |>
+    mutate(
+      Value = row_number(),
+      Label = as_factor(!!x),
+      Freq = n,
+      .keep = 'none'
+    ) |>
+    knitr::kable()
+}
+
+cbfactor(df8, Continent)
+```
+
+
+**Year**
+
+Variable name: Year
+
+Variable type: numeric
+
+Description: Years of observations.
+
+```{r}
+## Numeric variable tables
+cbnumberic = function(.data, x){
+  x = enquo(x)
+  
+  count(.data, !!x) |>
+    summarise(
+      min = min(!!x, na.rm = T),
+      mean = mean(!!x, na.rm = T),
+      median = median(!!x, na.rm = T),
+      max = max(!!x, na.rm = T)
+    ) |>
+    knitr::kable(digits = 1L)
+}
+
+cbnumberic(df8, Year)
+```
+
+
+**Population**
+
+Variable name: Pop
+
+Variable type: numeric
+
+Description: Provides the number of people.
+
+```{r}
+cbnumberic(df8, Pop)
+```
+
+
+**Gross Domestic Product**
+
+Variable name: GDP
+
+Variable type: numeric
+
+Description: Quantifies the value of goods and services produced by a country. Provides an estimate of the strength of the economy. In current $US.  
+
+```{r}
+cbnumberic(df8, GDP)
+```
+
+
+**Gross Domestic Product per Capita**
+
+Variable name: GDPC
+
+Variable type: numeric
+
+Description: Gross domestic product expressed as a ratio of population. In current $US.
+
+```{r}
+cbnumberic(df8, GDPC)
+```
+
+
+**Poverty Ratio**
+
+Variable name: Pov_Ratio
+
+Variable type: numeric
+
+Description: Percentage of the population living on less than $2.15 (2017 PPP). 
+
+```{r}
+cbnumberic(df8, Pov_Ratio)
+```
+
+
+**Gini Index**
+
+Variable name: GINI
+
+Variable type: factor
+
+Description: Measure of the equality of the distribution of income or consumption of individuals and households within an economy. 
+
+```{r}
+cbfactor(df8, GINI)
+```
+
+
+**International Aid Received**
+
+Variable name: Int_Aid
+
+Variable type: numeric
+
+Description: Net amount of developmental assistance or international aid received by a country. In current $US. 
+
+```{r}
+cbnumberic(df8, Int_Aid)
+```
+
+
+**Educational Attainment**
+
+Variable name: Edu_Aid
+
+Variable type: numeric
+
+Description: Percentage of the population age 25 and up which finished primary school.
+
+```{r}
+cbnumberic(df8, Edu_Attain)
+```
+
+
+**Water Access**
+
+Variable name: Water_Acc
+
+Variable type: numeric
+
+Description: Percentage of the population with access to a basic drinking water source.
+
+```{r}
+cbnumberic(df8, Water_Acc)
+```
+
+
+**Sanitation Access**
+
+Variable name: San_Acc
+
+Variable type: numeric
+
+Description: Percentage of the population with access to a basic sanitation system.
+
+```{r}
+cbnumberic(df8, San_Acc)
+```
+
+
+**Maternal Mortality Rate**
+
+Variable name: Mat_Mort
+
+Variable type: numeric
+
+Description: Number of women who die from pregnancy-related causes while pregnant or within 42 days of pregnancy termination. Measured per 100,000 live births. 
+
+```{r}
+cbnumberic(df8, Mat_Mort)
+```
+
+
+**Child Mortality Rate**
+
+Variable name: Child_Mort
+
+Variable type: numeric
+
+Description: Number of newborns who die before reaching the age of 5. Measured per 1,000 live births. 
+
+```{r}
+cbnumberic(df8, Child_Mort)
+```
+
+
+**Healthcare Access and Quality Index**
+
+Variable name: HAQ
+
+Variable type: numeric
+
+Description: Index measure of access to healthcare, with a 0 (worst) to 100 (best) scale. Index based upon death rates from 32 causes of death which can be avoided with timely medical care.
+
+```{r}
+cbnumberic(df8, HAQ)
+```
